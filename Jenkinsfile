@@ -1,8 +1,7 @@
 pipeline {
-    agent { label 'macHost'}
-    
+    agent { label 'macHost' }
+
     environment {
-        // Define variables at the top level of the pipeline
         BUILD_ATTESTATION_FILE = 'build-attestation.json'
         TEST_ATTESTATION_FILE = 'test-attestation.json'
         ARCHIVISTA_URL = 'http://localhost:9000/upload'
@@ -29,7 +28,7 @@ pipeline {
                 
                 // Store attestation in Archivista
                 script {
-                    def result = sh(script: "curl -X POST -F 'attestation=@${env.BUILD_ATTESTATION_FILE}' '${env.ARCHIVISTA_URL}'", returnStdout: true)
+                    def result = sh(script: "curl -X POST -H 'Content-Type: multipart/form-data' -F 'file=@${env.BUILD_ATTESTATION_FILE};type=application/json' ${env.ARCHIVISTA_URL}", returnStdout: true)
                     echo "Uploaded build attestation: ${result}"
                 }
             }
@@ -44,7 +43,7 @@ pipeline {
                 
                 // Store attestation in Archivista
                 script {
-                    def result = sh(script: "curl -X POST -F 'attestation=@${env.TEST_ATTESTATION_FILE}' '${env.ARCHIVISTA_URL}'", returnStdout: true)
+                    def result = sh(script: "curl -X POST -H 'Content-Type: multipart/form-data' -F 'file=@${env.TEST_ATTESTATION_FILE};type=application/json' ${env.ARCHIVISTA_URL}", returnStdout: true)
                     echo "Uploaded test attestation: ${result}"
                 }
             }
